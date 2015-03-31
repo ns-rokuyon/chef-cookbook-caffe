@@ -10,6 +10,14 @@
 cache_dir = Chef::Config["file_cache_path"]
 prefix_path = node["caffe"]["prefix"]
 
+# ------ checkout caffe ------
+
+git "#{cache_dir}/caffe" do
+    repository "https://github.com/BVLC/caffe.git"
+    action :sync
+end
+
+
 # ------ yum_packages -------
 
 node["caffe"]["yum_packages"].each do |pkg|
@@ -129,3 +137,14 @@ bash "make leveldb" do
     EOC
     not_if "ls #{prefix_path}/lib | grep libleveldb"
 end
+
+
+# ------ python modules ------
+
+bash "install python modules" do
+    cwd "#{cache_dir}/caffe/python"
+    code <<-EOC
+    for req in $(cat requirements.txt); do pip install $req; done
+    EOC
+end
+
