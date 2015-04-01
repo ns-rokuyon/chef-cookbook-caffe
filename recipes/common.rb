@@ -14,7 +14,7 @@ prefix_path = node["caffe"]["prefix"]
 
 git "#{cache_dir}/caffe" do
     repository "https://github.com/BVLC/caffe.git"
-    action :sync
+    action :checkout
 end
 
 
@@ -136,6 +136,25 @@ bash "make leveldb" do
     cp libleveldb* #{prefix_path}/lib/
     EOC
     not_if "ls #{prefix_path}/lib | grep libleveldb"
+end
+
+# ------ protobuf ------
+
+git "#{cache_dir}/protobuf" do
+    repository "https://github.com/google/protobuf.git"
+    action :checkout
+    not_if "ls #{prefix_path}/lib | grep libprotobuf"
+end
+
+bash "make protobuf" do
+    cwd "#{cache_dir}/protobuf"
+    code <<-EOC
+    ./autogen.sh
+    ./configure --prefix=#{prefix_path}
+    make
+    make install
+    EOC
+    not_if "ls #{prefix_path}/lib | grep libprotobuf"
 end
 
 
