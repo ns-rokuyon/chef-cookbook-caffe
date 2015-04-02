@@ -70,6 +70,22 @@ make_install_from_source "automake" do
     tar_option "xvf"
 end
 
+# ------ boost -------
+
+remote_file "#{cache_dir}/boost_1_57_0.tar.gz" do
+    source "http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.57.0%2F&ts=1427975290&use_mirror=jaist"
+end
+
+bash "install boost" do
+    cwd cache_dir
+    code <<-EOC
+    tar zxvf boost_1_57_0.tar.gz
+    cd boost_1_57_0
+    ./bootstrap.sh --with-python=Python2.7
+    ./b2 install -j2 --prefix=#{prefix_path}
+    EOC
+end
+
 # ------ glog -------
 
 git "#{cache_dir}/glog" do
