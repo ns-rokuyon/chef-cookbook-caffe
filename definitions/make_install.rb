@@ -17,7 +17,7 @@ define :make_install_from_source, :tar_option => "zxvf", :prefix => "/usr/local"
         code <<-EOC
             tar #{params[:tar_option]} #{file}
             cd #{dir}
-            ./configure --prefix=#{params[:prefix]}
+            ./configure --prefix=#{params[:prefix]} --enable-shared
             make
             make install
         EOC

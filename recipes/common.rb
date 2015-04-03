@@ -39,6 +39,16 @@ make_install_from_source "python" do
     prefix prefix_path
 end
 
+file "/etc/ld.so.conf.d/python.conf" do
+    content "/usr/local/lib"
+end
+
+bash "ldconfig" do
+    code <<-EOC
+    ldconfig
+    EOC
+end
+
 bash "install pip" do
     cwd cache_dir
     code <<-EOC
@@ -74,6 +84,7 @@ end
 
 remote_file "#{cache_dir}/boost_1_57_0.tar.gz" do
     source "http://downloads.sourceforge.net/project/boost/boost/1.57.0/boost_1_57_0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.57.0%2F&ts=1427975290&use_mirror=jaist"
+    not_if "ls #{prefix_path}/lib | grep libboost_"
 end
 
 bash "install boost" do
@@ -81,9 +92,29 @@ bash "install boost" do
     code <<-EOC
     tar zxvf boost_1_57_0.tar.gz
     cd boost_1_57_0
-    ./bootstrap.sh --with-python=Python2.7
+    ./bootstrap.sh --with-python-version=2.7 --with-python-root=#{prefix_path}
     ./b2 install -j2 --prefix=#{prefix_path}
     EOC
+    not_if "ls #{prefix_path}/lib | grep libboost_"
+end
+
+# ------ opencv ------
+
+remote_file "#{cache_dir}/opencv-2.4.9.zip" do
+    source "http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.9/opencv-2.4.9.zip"
+    not_if "ls #{prefix_path}/lib | grep libopencv_"
+end
+
+bash "install opencv" do
+    cwd cache_dir
+    code <<-EOC
+    unzip opencv-2.4.9.zip
+    cd opencv-2.4.9; mkdir build; cd build
+    cmake #{node["caffe"]["opencv"]["cmake"]} ..
+    make -j#{node["caffe"]["parallels"]}
+    make install
+    EOC
+    not_if "ls #{prefix_path}/lib | grep libopencv_"
 end
 
 # ------ glog -------
@@ -173,6 +204,22 @@ bash "make protobuf" do
     not_if "ls #{prefix_path}/lib | grep libprotobuf"
 end
 
+# ------ lmdb ------
+
+git "#{cache_dir}/mdb" do
+    repository "https://gitorious.org/mdb/mdb.git"
+    action :checkout
+    not_if "ls #{prefix_path}/lib | grep liblmdb"
+end
+
+bash "install lmdb" do
+    cwd "#{cache_dir}/mdb/libraries/liblmdb"
+    code <<-EOC
+    make
+    make install
+    EOC
+    not_if "ls #{prefix_path}/lib | grep liblmdb"
+end
 
 # ------ python modules ------
 
@@ -180,6 +227,7 @@ bash "install python modules" do
     cwd "#{cache_dir}/caffe/python"
     code <<-EOC
     for req in $(cat requirements.txt); do pip install $req; done
+    pip install #{node["caffe"]["python"]["pip_packages"].join(' ')}
     EOC
 end
 
