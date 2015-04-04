@@ -5,20 +5,19 @@
 cache_dir = Chef::Config["file_cache_path"]
 prefix_path = node["caffe"]["prefix"]
 
-# ------ checkout caffe ------
-
-git "#{cache_dir}/caffe" do
-    repository "https://github.com/BVLC/caffe.git"
-    action :checkout
-end
-
-
 # ------ yum_packages -------
 
 node["caffe"]["yum_packages"].each do |pkg|
     package pkg do
         action :install
     end
+end
+
+# ------ checkout caffe ------
+
+git "#{cache_dir}/caffe" do
+    repository "https://github.com/BVLC/caffe.git"
+    action :checkout
 end
 
 
@@ -59,7 +58,7 @@ end
 make_install_from_source "autoconf" do
     file "autoconf-2.69.tar.gz"
     make_dir "autoconf-2.69"
-    url "ftp://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz"
+    url "http://ftpmirror.gnu.org/autoconf/autoconf-2.69.tar.gz"
     check "#{prefix_path}/bin/autoconf"
     prefix prefix_path
 end
@@ -69,7 +68,7 @@ end
 make_install_from_source "automake" do
     file "automake-1.14.1.tar.xz"
     make_dir "automake-1.14.1"
-    url "http://ftp.gnu.org/gnu/automake/automake-1.14.1.tar.xz"
+    url "http://ftpmirror.gnu.org/automake/automake-1.14.1.tar.xz"
     check "#{prefix_path}/bin/automake-1.14"
     prefix prefix_path
     tar_option "xvf"
@@ -123,6 +122,7 @@ end
 bash "make and install glog" do
     cwd "#{cache_dir}/glog"
     code <<-EOC
+    export PATH=#{prefix_path}/bin:$PATH
     automake --add-missing
     ./configure --prefix=#{prefix_path}
     make
@@ -206,6 +206,10 @@ git "#{cache_dir}/mdb" do
     repository "https://gitorious.org/mdb/mdb.git"
     action :checkout
     not_if "ls #{prefix_path}/lib | grep liblmdb"
+end
+
+directory "#{prefix_path}/man" do
+    action :create
 end
 
 bash "install lmdb" do

@@ -22,5 +22,7 @@ bash "make install caffe" do
     make all
     cd python
     make
+    cd ..
+    make install
     EOC
 end

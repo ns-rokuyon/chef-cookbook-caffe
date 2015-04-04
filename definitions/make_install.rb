@@ -15,6 +15,7 @@ define :make_install_from_source, :tar_option => "zxvf", :prefix => "/usr/local"
     bash "make #{params[:name]}" do
         cwd cache_dir
         code <<-EOC
+            export PATH=#{params[:prefix]}/bin:$PATH
             tar #{params[:tar_option]} #{file}
             cd #{dir}
             ./configure --prefix=#{params[:prefix]} --enable-shared
