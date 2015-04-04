@@ -1,11 +1,6 @@
 #
 # Cookbook Name:: caffe
 # Recipe:: common
-#
-# Copyright 2015, YOUR_COMPANY_NAME
-#
-# All rights reserved - Do Not Redistribute
-#
 
 cache_dir = Chef::Config["file_cache_path"]
 prefix_path = node["caffe"]["prefix"]
@@ -189,6 +184,7 @@ end
 
 git "#{cache_dir}/protobuf" do
     repository "https://github.com/google/protobuf.git"
+    revision "bba83652e1be610bdb7ee1566ad18346d98b843c"
     action :checkout
     not_if "ls #{prefix_path}/lib | grep libprotobuf"
 end

@@ -4,7 +4,7 @@ default["caffe"]["prefix"] = "/usr/local"
 # make -j option value
 default["caffe"]["parallels"] = 2
 
-default["caffe"]["yum_packages"] = %w(git make cmake unzip bzip2 bzip2-devel xz libtool atlas-sse3 atlas-sse3-devel snappy snappy-devel libpng-devel libjpeg-devel libtiff-devel libjasper-devel openexr-devel)
+default["caffe"]["yum_packages"] = %w(git make cmake unzip bzip2 bzip2-devel xz libtool gcc-gfortran libgfortran freetype freetype-devel atlas-sse3 atlas-sse3-devel snappy snappy-devel libpng-devel libjpeg-devel libtiff-devel libjasper-devel openexr-devel)
 default["caffe"]["python"]["version"] = "2.7.9"
 default["caffe"]["python"]["pip_packages"] = %w(protobuf lmdb)
 
