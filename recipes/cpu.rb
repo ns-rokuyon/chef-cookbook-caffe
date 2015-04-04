@@ -20,5 +20,7 @@ bash "make install caffe" do
     code <<-EOC
     cmake #{cmake_options} ..
     make all
+    cd python
+    make
     EOC
 end

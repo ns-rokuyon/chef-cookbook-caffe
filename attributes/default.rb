@@ -26,6 +26,6 @@ default["caffe"]["opencv"]["cmake"] = "\
 
 default["caffe"]["cmake"]["cpu"] = 
     "-DBUILD_SHARED_LIBS=ON -DCPU_ONLY=ON -DUSE_CUDNN=OFF -DBUILD_docs=ON -DBUILD_python=ON -DBUILD_matlab=OFF -DCMAKE_PREFIX_PATH=/usr/local \
-    -DAtlas_BLAS_LIBRARY=/usr/lib64 -DAtlas_CBLAS_LIBRARY=/usr/lib64 -DAtlas_LAPACK_LIBRARY=/usr/lib64 -DBoost_DIR=/usr/local -DBoost_INCLUDE_DIR=/usr/local/include -DBoost_LIBRARY_DIR=/usr/local/lib -DSnappy_INCLUDE_DIR=/usr/include -DSnappy_LIBRARIES=/usr/lib64"
+    -DAtlas_BLAS_LIBRARY=/usr/lib64/atlas-sse3/libatlas.so -DAtlas_CBLAS_LIBRARY=/usr/lib64/atlas-sse3/libcblas.so -DAtlas_LAPACK_LIBRARY=/usr/lib64/atlas-sse3/liblapack.so -DBoost_DIR=/usr/local -DBoost_INCLUDE_DIR=/usr/local/include -DBoost_LIBRARY_DIR=/usr/local/lib -DSnappy_INCLUDE_DIR=/usr/include -DSnappy_LIBRARIES=/usr/lib64"
 default["caffe"]["cmake"]["gpu"] = 
     "-DBUILD_SHARED_LIBS=ON -DCPU_ONLY=OFF -DUSE_CUDNN=ON -DBUILD_docs=ON -DBUILD_python=ON -DBUILD_matlab=OFF -DCMAKE_PREFIX_PATH=/usr/local -DAtlas_BLAS_LIBRARY=/usr/lib64 -DAtlas_CBLAS_LIBRARY=/usr/lib64 -DAtlas_LAPACK_LIBRARY=/usr/lib64 -DBoost_DIR=/usr/local -DBoost_INCLUDE_DIR=/usr/local/include -DBoost_LIBRARY_DIR=/usr/local/lib -DSnappy_INCLUDE_DIR=/usr/include -DSnappy_LIBRARIES=/usr/lib64"

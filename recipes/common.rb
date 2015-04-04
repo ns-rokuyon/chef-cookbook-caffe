@@ -43,7 +43,7 @@ file "/etc/ld.so.conf.d/python.conf" do
     content "/usr/local/lib"
 end
 
-bash "ldconfig" do
+bash "ldconfig python.conf" do
     code <<-EOC
     ldconfig
     EOC
