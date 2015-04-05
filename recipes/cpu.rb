@@ -18,6 +18,7 @@ cmake_options = node["caffe"]["cmake"]["cpu"]
 bash "make install caffe" do
     cwd build_dir
     code <<-EOC
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
     cmake #{cmake_options} ..
     make all
     cd python
