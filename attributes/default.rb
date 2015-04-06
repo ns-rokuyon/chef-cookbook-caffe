@@ -11,13 +11,13 @@ default["caffe"]["prefix"] = "/usr/local"
 default["caffe"]["parallels"] = 2
 
 # yum packages
-default["caffe"]["yum_packages"] = %w(git make cmake unzip bzip2 bzip2-devel xz libtool gcc-gfortran libgfortran freetype freetype-devel atlas-sse3 atlas-sse3-devel snappy snappy-devel libpng-devel libjpeg-devel libtiff-devel libjasper-devel openexr-devel)
+default["caffe"]["yum_packages"] = %w(git make cmake wget openssl-devel unzip bzip2 bzip2-devel xz libtool gcc-gfortran libgfortran freetype freetype-devel atlas-sse3 atlas-sse3-devel snappy snappy-devel libpng-devel libjpeg-devel libtiff-devel libjasper-devel openexr-devel)
 
 # use python version
 default["caffe"]["python"]["version"] = "2.7.9"
 
 # extra python modules
-default["caffe"]["python"]["pip_packages"] = %w(protobuf lmdb)
+default["caffe"]["python"]["pip_packages"] = %w(protobuf lmdb scikit-image)
 
 # opencv cmake options
 default["caffe"]["opencv"]["cmake"] = "\
