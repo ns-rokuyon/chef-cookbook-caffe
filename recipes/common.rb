@@ -7,6 +7,16 @@ prefix_path = node["caffe"]["prefix"]
 
 # ------ yum_packages -------
 
+if platform?("redhat") || platform?("amazon")
+    template "/etc/yum.repos.d/CentOS-Base.repo" do
+        source "CentOS-Base.repo.erb"
+        variables({
+            arch: "x86_64",
+            enabled: 1
+        })
+    end
+end
+
 node["caffe"]["yum_packages"].each do |pkg|
     package pkg do
         action :install
