@@ -43,6 +43,6 @@ end
 bash "install cuda" do
     cwd cache_dir
     code <<-EOC
-        ./#{cuda_installer}
+        ./#{cuda_installer} -silent
     EOC
 end

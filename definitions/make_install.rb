@@ -1,4 +1,4 @@
-define :make_install_from_source, :tar_option => "zxvf", :prefix => "/usr/local" do
+define :make_install_from_source, :tar_option => "zxvf", :prefix => "/usr/local", :parallels => 1 do
     cache_dir = Chef::Config["file_cache_path"]
 
     file = params[:file]
@@ -19,7 +19,7 @@ define :make_install_from_source, :tar_option => "zxvf", :prefix => "/usr/local"
             tar #{params[:tar_option]} #{file}
             cd #{dir}
             ./configure --prefix=#{params[:prefix]} --enable-shared
-            make
+            make -j#{params[:parallels]}
             make install
         EOC
         not_if "ls #{check} | grep #{check_file}"

@@ -5,9 +5,11 @@
 cache_dir = Chef::Config["file_cache_path"]
 prefix_path = node["caffe"]["prefix"]
 
+make_parallels = node["caffe"]["parallels"]
+
 # ------ yum_packages -------
 
-if platform?("redhat") || platform?("amazon")
+if platform?("redhat", "amazon")
     template "/etc/yum.repos.d/CentOS-Base.repo" do
         source "CentOS-Base.repo.erb"
         variables({
@@ -35,32 +37,51 @@ end
 
 version = node["caffe"]["python"]["version"]
 
-make_install_from_source "python" do
-    file "Python-#{version}.tgz"
-    make_dir "Python-#{version}"
-    url "https://www.python.org/ftp/python/#{version}/Python-#{version}.tgz"
-    check "#{prefix_path}/bin/python"
-    prefix prefix_path
-end
+if platform? "amazon"
+    link "#{prefix_path}/lib/libpython2.7.so" do
+        to "/usr/lib64/libpython2.7.so"
+    end
 
-file "/etc/ld.so.conf.d/python.conf" do
-    content "/usr/local/lib"
-end
+    link "#{prefix_path}/include/python2.7" do
+        to "/usr/include/python2.7"
+    end
 
-bash "ldconfig python.conf" do
-    code <<-EOC
-    ldconfig
-    EOC
-end
+    link "#{prefix_path}/bin/python" do
+        to "/usr/bin/python2.7"
+    end
 
-bash "install pip" do
-    cwd cache_dir
-    code <<-EOC
-        wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
-        python2.7 ez_setup.py
-        easy_install-2.7 pip
-    EOC
-    not_if "ls #{prefix_path}/bin/pip"
+    link "#{prefix_path}/bin/python2.7" do
+        to "/usr/bin/python2.7"
+    end
+else
+    make_install_from_source "python" do
+        file "Python-#{version}.tgz"
+        make_dir "Python-#{version}"
+        url "https://www.python.org/ftp/python/#{version}/Python-#{version}.tgz"
+        check "#{prefix_path}/bin/python"
+        parallels make_parallels
+        prefix prefix_path
+    end
+
+    file "/etc/ld.so.conf.d/python.conf" do
+        content "/usr/local/lib"
+    end
+
+    bash "ldconfig python.conf" do
+        code <<-EOC
+        ldconfig
+        EOC
+    end
+
+    bash "install pip" do
+        cwd cache_dir
+        code <<-EOC
+            wget https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py
+            python2.7 ez_setup.py
+            easy_install-2.7 pip
+        EOC
+        not_if "ls #{prefix_path}/bin/pip"
+    end
 end
 
 # ------ autoconf ------
@@ -97,7 +118,7 @@ bash "install boost" do
     tar zxvf boost_1_57_0.tar.gz
     cd boost_1_57_0
     ./bootstrap.sh --with-python-version=2.7 --with-python-root=#{prefix_path}
-    ./b2 install -j2 --prefix=#{prefix_path}
+    ./b2 install -j#{make_parallels} --prefix=#{prefix_path}
     EOC
     not_if "ls #{prefix_path}/lib | grep libboost_"
 end
@@ -115,7 +136,7 @@ bash "install opencv" do
     unzip opencv-2.4.9.zip
     cd opencv-2.4.9; mkdir build; cd build
     cmake #{node["caffe"]["opencv"]["cmake"]} ..
-    make -j#{node["caffe"]["parallels"]}
+    make -j#{make_parallels}
     make install
     EOC
     not_if "ls #{prefix_path}/lib | grep libopencv_"
@@ -135,7 +156,7 @@ bash "make and install glog" do
     export PATH=#{prefix_path}/bin:$PATH
     automake --add-missing
     ./configure --prefix=#{prefix_path}
-    make
+    make -j#{make_parallels}
     make install
     EOC
     not_if "ls #{prefix_path}/lib | grep glog"
@@ -154,7 +175,7 @@ bash "make and install gflags" do
     cwd "#{cache_dir}/gflags"
     code <<-EOC
     cmake -DCMAKE_INSTALL_PREFIX=#{prefix_path} -DBUILD_SHARED_LIBS=true .
-    make
+    make -j#{make_parallels}
     make install
     EOC
     not_if "ls #{prefix_path}/lib | grep gflags"
@@ -183,7 +204,7 @@ end
 bash "make leveldb" do
     cwd "#{cache_dir}/leveldb"
     code <<-EOC
-    make
+    make -j#{make_parallels}
     cp -r include/leveldb #{prefix_path}/include/
     cp libleveldb* #{prefix_path}/lib/
     EOC
@@ -204,7 +225,7 @@ bash "make protobuf" do
     code <<-EOC
     ./autogen.sh
     ./configure --prefix=#{prefix_path}
-    make
+    make -j#{make_parallels}
     make install
     EOC
     not_if "ls #{prefix_path}/lib | grep libprotobuf"
@@ -225,7 +246,7 @@ end
 bash "install lmdb" do
     cwd "#{cache_dir}/mdb/libraries/liblmdb"
     code <<-EOC
-    make
+    make -j#{make_parallels}
     make install
     EOC
     not_if "ls #{prefix_path}/lib | grep liblmdb"

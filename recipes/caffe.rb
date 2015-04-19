@@ -22,7 +22,7 @@ bash "make install caffe" do
     cmake #{cmake_options} ..
     make all
     cd python
-    make
+    make -j#{make_parallels}
     cd ..
     make install
     EOC
