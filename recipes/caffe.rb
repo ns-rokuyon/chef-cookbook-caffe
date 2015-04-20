@@ -3,7 +3,9 @@
 # Recipe:: cpu
 
 cache_dir = Chef::Config["file_cache_path"]
+
 caffe_mode = node["caffe"]["mode"]
+make_parallels = node["caffe"]["parallels"]
 
 # ----- build caffe ------
 
