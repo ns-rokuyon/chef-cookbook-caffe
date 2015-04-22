@@ -46,3 +46,27 @@ bash "install cuda" do
         ./#{cuda_installer} -silent
     EOC
 end
+
+
+# cuDNN
+#--------------------------------
+
+if node["caffe"]["gpu"]["cudnn"]
+    cudnn_tgz = node["caffe"]["gpu"]["cudnn"]
+
+    remote_file "#{cache_dir}/#{cudnn_tgz}" do
+        source cudnn_tgz
+    end
+
+    bash "install cudnn" do
+        cwd cache_dir
+        code <<-EOC
+            tar zxvf #{cudnn_tgz}
+            cd #{cudnn_tgz.sub(".tgz","")}
+            cp cudnn.h #{prefix_path}/include/
+            cp libcudnn* #{prefix_path}/lib/
+        EOC
+    end
+end
+
+

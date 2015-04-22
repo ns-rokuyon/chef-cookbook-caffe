@@ -25,6 +25,12 @@ default["caffe"]["gpu"]["driver"] = "http://jp.download.nvidia.com/XFree86/Linux
 # CUDA installer download url (CUDA6.5)
 default["caffe"]["gpu"]["cuda"] = "http://developer.download.nvidia.com/compute/cuda/6_5/rel/installers/cuda_6.5.14_linux_64.run"
 
+# cuDNN
+default["caffe"]["gpu"]["cudnn"] = true
+
+# cuDNN file
+default["caffe"]["gpu"]["cudnn_tgz"] = "cudnn-6.5-linux-x64-v2.tgz"
+
 # opencv cmake options
 default["caffe"]["opencv"]["cmake"] = "\
     -D CMAKE_C_COMPILER=/usr/bin/gcc \
