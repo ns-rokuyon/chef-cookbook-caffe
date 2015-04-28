@@ -52,10 +52,11 @@ end
 #--------------------------------
 
 if node["caffe"]["gpu"]["cudnn"]
-    cudnn_tgz = node["caffe"]["gpu"]["cudnn"]
+    cudnn_tgz = node["caffe"]["gpu"]["cudnn_tgz"]
 
     remote_file "#{cache_dir}/#{cudnn_tgz}" do
         source cudnn_tgz
+        ignore_failure true
     end
 
     bash "install cudnn" do
@@ -66,6 +67,7 @@ if node["caffe"]["gpu"]["cudnn"]
             cp cudnn.h #{prefix_path}/include/
             cp libcudnn* #{prefix_path}/lib/
         EOC
+        ignore_failure true
     end
 end
 
